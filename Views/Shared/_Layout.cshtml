@@ -91,7 +91,7 @@
                                                                 <td><img src="@(item.Product.ImageUrl ?? "https://via.placeholder.com/50")" alt="@(item.Product.Name ?? "Product")" style="height:50px;" /></td>
                                                                 <td>@(item.Product.Name ?? "Unknown")</td>
                                                                 <td>@item.Quantity</td>
-                                                                <td>$@(item.Product.Price * item.Quantity)</td>
+                                                                <td>৳@(item.Product.Price * item.Quantity)</td>
                                                                 <td>
                                                                     <form method="post" action="/Home/RemoveFromCart">
                                                                         <input type="hidden" name="id" value="@item.Product.Id" />
@@ -105,7 +105,7 @@
                                         </table>
                                 </div>
                                 <div class="text-end mb-4">
-                                        <strong>Total: $@cart.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</strong>
+                                        <strong>Total: ৳@cart.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</strong>
                                 </div>
                         }
                     </div>
@@ -166,7 +166,7 @@
                                             <div class="alert alert-info">You can pay once your order is delivered.</div>
                                         </div>
                                         <div class="mb-3">
-                                            <strong>Total: $@cart.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</strong>
+                                            <strong>Total: ৳@cart.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</strong>
                                         </div>
                                     </div>
                                     <div class="modal-footer">

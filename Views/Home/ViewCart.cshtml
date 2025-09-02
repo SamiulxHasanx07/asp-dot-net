@@ -47,7 +47,7 @@ else
                         <td><img src="@(item.Product.ImageUrl ?? "https://via.placeholder.com/50")" alt="@(item.Product.Name ?? "Product")" style="height:50px;" /></td>
                         <td>@(item.Product.Name ?? "Unknown")</td>
                         <td>@item.Quantity</td>
-                        <td>$@(item.Product.Price * item.Quantity)</td>
+                        <td>৳@(item.Product.Price * item.Quantity)</td>
                         <td>
                             <form method="post" action="/Home/RemoveFromCart">
                                 <input type="hidden" name="id" value="@item.Product.Id" />
@@ -61,7 +61,7 @@ else
         </table>
     </div>
     <div class="text-end mb-4">
-        <strong>Total: $@Model.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</strong>
+        <strong>Total: ৳@Model.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</strong>
     </div>
 }
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using Helpers;
 using System.Linq;
@@ -22,7 +23,11 @@ namespace Controllers
                 TempData["Message"] = "Please login to view your orders.";
                 return RedirectToAction("Login", "Auth");
             }
-            var orders = _db.Orders.Where(o => o.CustomerEmail == user).OrderByDescending(o => o.CreatedAt).ToList();
+            var orders = _db.Orders
+                .Where(o => o.CustomerEmail == user)
+                .Include(o => o.Items) // Ensure items are loaded
+                .OrderByDescending(o => o.CreatedAt)
+                .ToList();
             return View(orders);
         }
 

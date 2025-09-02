@@ -24,7 +24,7 @@
             <td>@order.Status</td>
             <td>@order.PaymentMethod</td>
             <td>@order.TransactionId</td>
-            <td>$@order.Items.Sum(i => i.Price * i.Quantity)</td>
+            <td>৳@order.Items.Sum(i => i.Price * i.Quantity)</td>
             <td>
                 <button class="btn btn-sm btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#orderItems@order.Id">View</button>
             </td>
@@ -35,7 +35,7 @@
                 @foreach (var item in order.Items)
                 {
                     <li class="list-group-item">
-                        <strong>@item.ProductName</strong> x @item.Quantity ($@item.Price each)
+                        <strong>@item.ProductName</strong> x @item.Quantity (৳@item.Price each)
                     </li>
                 }
                 </ul>
