@@ -1,0 +1,68 @@
+@model Models.Cart
+@{
+    ViewData["Title"] = "Your Cart";
+}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="/favicon.ico" alt="Logo" width="32" height="32" class="me-2" />
+            <span class="fw-bold">Mango Shop</span>
+        </a>
+        <div class="d-flex">
+            <a class="btn btn-outline-primary me-2" href="/Dashboard">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a class="btn btn-outline-success position-relative" href="/Home/ViewCart">
+                <i class="bi bi-cart"></i> Cart
+            </a>
+        </div>
+    </div>
+</nav>
+
+<h2 class="mb-4">Your Cart</h2>
+@if (Model.Items.Count == 0)
+{
+    <div class="alert alert-info">Your cart is empty.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                @if (item.Product != null)
+                {
+                    <tr>
+                        <td><img src="@(item.Product.ImageUrl ?? "https://via.placeholder.com/50")" alt="@(item.Product.Name ?? "Product")" style="height:50px;" /></td>
+                        <td>@(item.Product.Name ?? "Unknown")</td>
+                        <td>@item.Quantity</td>
+                        <td>$@(item.Product.Price * item.Quantity)</td>
+                        <td>
+                            <form method="post" action="/Home/RemoveFromCart">
+                                <input type="hidden" name="id" value="@item.Product.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="text-end mb-4">
+        <strong>Total: $@Model.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</strong>
+    </div>
+}
+
+<a href="/" class="btn btn-warning">Continue Shopping</a>

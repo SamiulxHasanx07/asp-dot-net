@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - _</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/_.styles.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    @using Helpers
+    @{
+        var cart = Context.Session.GetObjectFromJson<Models.Cart>("Cart") ?? new Models.Cart();
+        var cartCount = cart.Items.Sum(i => i.Quantity);
+        var user = Context.Session.GetString("User");
+    }
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm py-2">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center text-warning" href="/">
+                    <img src="/favicon.ico" alt="Logo" width="32" height="32" class="me-2" />
+                    <span class="fw-bold fs-4">Mango Shop</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <button id="darkModeToggle" class="btn btn-outline-light ms-2" type="button" title="Toggle dark mode">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/Dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                        </li>
+                        @if (user == "admin@gmail.com") {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" href="/Dashboard/Orders"><i class="bi bi-list-check"></i> Admin Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" href="/Dashboard"><i class="bi bi-box"></i> Products</a>
+                            </li>
+                        } else if (!string.IsNullOrEmpty(user)) {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" href="/User/Orders"><i class="bi bi-list-check"></i> My Orders</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
+                        <li class="nav-item me-3">
+                            <a class="nav-link position-relative text-light" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
+                                <i class="bi bi-cart-fill fs-5"></i>
+                                <span class="badge bg-warning text-dark position-absolute top-0 start-100 translate-middle rounded-pill" style="font-size:0.8rem;">@cartCount</span>
+                                <span class="ms-1">Cart</span>
+                            </a>
+                        </li>
+        <!-- Cart Modal -->
+        <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-warning">
+                        <h5 class="modal-title" id="cartModalLabel">Your Cart</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (cart.Items.Count == 0)
+                        {
+                                <div class="alert alert-info">Your cart is empty.</div>
+                        }
+                        else
+                        {
+                                <div class="table-responsive">
+                                        <table class="table table-bordered align-middle">
+                                                <thead class="table-dark">
+                                                        <tr>
+                                                                <th>Image</th>
+                                                                <th>Product</th>
+                                                                <th>Quantity</th>
+                                                                <th>Price</th>
+                                                                <th>Action</th>
+                                                        </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach (var item in cart.Items)
+                                                {
+                                                        @if (item.Product != null)
+                                                        {
+                                                            <tr>
+                                                                <td><img src="@(item.Product.ImageUrl ?? "https://via.placeholder.com/50")" alt="@(item.Product.Name ?? "Product")" style="height:50px;" /></td>
+                                                                <td>@(item.Product.Name ?? "Unknown")</td>
+                                                                <td>@item.Quantity</td>
+                                                                <td>$@(item.Product.Price * item.Quantity)</td>
+                                                                <td>
+                                                                    <form method="post" action="/Home/RemoveFromCart">
+                                                                        <input type="hidden" name="id" value="@item.Product.Id" />
+                                                                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                }
+                                                </tbody>
+                                        </table>
+                                </div>
+                                <div class="text-end mb-4">
+                                        <strong>Total: $@cart.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</strong>
+                                </div>
+                        }
+                    </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <a href="/" class="btn btn-warning">Continue Shopping</a>
+                                    @if (cart.Items.Count > 0)
+                                    {
+                                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#checkoutModal" data-bs-dismiss="modal">Checkout</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Modal -->
+                    <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-dark text-warning">
+                                    <h5 class="modal-title" id="checkoutModalLabel">Checkout</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="post" action="/Home/Checkout">
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Name</label>
+                                            <input type="text" name="CustomerName" class="form-control" required />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            @if (!string.IsNullOrEmpty(user))
+                                            {
+                                                <div class="form-control-plaintext text-success">@user</div>
+                                                <input type="hidden" name="CustomerEmail" value="@user" />
+                                            }
+                                            else
+                                            {
+                                                <div class="alert alert-danger">Not logged in. Please <a href="/Auth/Login">login</a> to checkout.</div>
+                                            }
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Address</label>
+                                            <textarea name="CustomerAddress" class="form-control" required></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Payment Method</label>
+                                            <select class="form-select" id="modalPaymentMethod" name="PaymentMethod" required onchange="toggleModalTransactionId()">
+                                                <option value="Bkash">Bkash</option>
+                                                <option value="CashOnDelivery">Cash on Delivery</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3" id="modalTransactionIdDiv" style="display:none;">
+                                            <label class="form-label">Bkash Transaction ID</label>
+                                            <input type="text" class="form-control" id="modalTransactionId" name="TransactionId" />
+                                        </div>
+                                        <div class="mb-3" id="modalCashOnDeliveryInfo" style="display:none;">
+                                            <div class="alert alert-info">You can pay once your order is delivered.</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <strong>Total: $@cart.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</strong>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-success">Place Order</button>
+                                    </div>
+                                </form>
+                                <script>
+                                function toggleModalTransactionId() {
+                                    var method = document.getElementById('modalPaymentMethod').value;
+                                    document.getElementById('modalTransactionIdDiv').style.display = (method === 'Bkash') ? 'block' : 'none';
+                                    document.getElementById('modalCashOnDeliveryInfo').style.display = (method === 'CashOnDelivery') ? 'block' : 'none';
+                                }
+                                document.getElementById('modalPaymentMethod').addEventListener('change', toggleModalTransactionId);
+                                window.addEventListener('DOMContentLoaded', toggleModalTransactionId);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                        @if (user == null)
+                        {
+                            <li class="nav-item me-2">
+                                <a class="nav-link text-light" href="/Auth/Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" href="/Auth/Signup">Sign Up</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item me-2">
+                                <span class="nav-link text-light">Hello, <strong>@user</strong></span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-danger" href="/Auth/Logout">Logout</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - _ - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <style>
+        body.dark-mode {
+            background-color: #181a1b !important;
+            color: #e0e0e0 !important;
+        }
+        .navbar-dark.bg-dark.dark-mode {
+            background-color: #23272b !important;
+        }
+        .card.dark-mode, .table.dark-mode {
+            background-color: #23272b !important;
+            color: #e0e0e0 !important;
+        }
+        .form-control.dark-mode {
+            background-color: #23272b !important;
+            color: #e0e0e0 !important;
+            border-color: #444;
+        }
+        .btn-outline-light.dark-mode {
+            border-color: #e0e0e0;
+        }
+    </style>
+    <script>
+        // Dark mode toggle logic
+        function setDarkMode(enabled) {
+            document.body.classList.toggle('dark-mode', enabled);
+            document.querySelectorAll('.navbar').forEach(e => e.classList.toggle('dark-mode', enabled));
+            document.querySelectorAll('.card').forEach(e => e.classList.toggle('dark-mode', enabled));
+            document.querySelectorAll('.table').forEach(e => e.classList.toggle('dark-mode', enabled));
+            document.querySelectorAll('.form-control').forEach(e => e.classList.toggle('dark-mode', enabled));
+            document.querySelectorAll('.btn-outline-light').forEach(e => e.classList.toggle('dark-mode', enabled));
+        }
+        function getDarkModePref() {
+            return localStorage.getItem('darkMode') === 'true';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            setDarkMode(getDarkModePref());
+            var btn = document.getElementById('darkModeToggle');
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    var enabled = !getDarkModePref();
+                    localStorage.setItem('darkMode', enabled);
+                    setDarkMode(enabled);
+                });
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

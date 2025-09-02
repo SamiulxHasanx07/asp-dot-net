@@ -1,0 +1,57 @@
+@model Models.Cart
+@{
+    ViewData["Title"] = "Checkout";
+    var cart = Model;
+}
+<h2>Checkout</h2>
+<form method="post" action="/Home/Checkout">
+    <div class="mb-3">
+        <label for="CustomerName" class="form-label">Name</label>
+        <input type="text" class="form-control" id="CustomerName" name="CustomerName" required />
+    </div>
+    <div class="mb-3">
+        <label for="CustomerEmail" class="form-label">Email</label>
+        <input type="email" class="form-control" id="CustomerEmail" name="CustomerEmail" required />
+    </div>
+    <div class="mb-3">
+        <label for="CustomerAddress" class="form-label">Address</label>
+        <input type="text" class="form-control" id="CustomerAddress" name="CustomerAddress" required />
+    </div>
+    <div class="mb-3">
+        <label for="PaymentMethod" class="form-label">Payment Method</label>
+        <select class="form-select" id="PaymentMethod" name="PaymentMethod" required onchange="toggleTransactionId()">
+            <option value="Bkash">Bkash</option>
+            <option value="CashOnDelivery">Cash on Delivery</option>
+        </select>
+    </div>
+    <div class="mb-3" id="transactionIdDiv" style="display:none;">
+        <label for="TransactionId" class="form-label">Bkash Transaction ID</label>
+        <input type="text" class="form-control" id="TransactionId" name="TransactionId" />
+    </div>
+    <button type="submit" class="btn btn-success">Place Order</button>
+</form>
+<script>
+function toggleTransactionId() {
+    var method = document.getElementById('PaymentMethod').value;
+    document.getElementById('transactionIdDiv').style.display = (method === 'Bkash') ? 'block' : 'none';
+}
+document.getElementById('PaymentMethod').addEventListener('change', toggleTransactionId);
+window.addEventListener('DOMContentLoaded', toggleTransactionId);
+</script>
+@if (cart.Items.Count > 0)
+{
+    <h4 class="mt-4">Order Summary</h4>
+    <ul class="list-group mb-3">
+        @foreach (var item in cart.Items)
+        {
+            @if (item.Product != null)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @(item.Product.Name ?? "Unknown") <span>x @item.Quantity</span>
+                    <span>৳@item.Product.Price</span>
+                </li>
+            }
+        }
+    </ul>
+    <p><strong>Total:</strong> ৳@cart.Items.Where(i => i.Product != null).Sum(i => i.Product!.Price * i.Quantity)</p>
+}

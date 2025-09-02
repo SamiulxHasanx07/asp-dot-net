@@ -1,0 +1,78 @@
+@model IEnumerable<Models.Product>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-warning fw-bold">Add New Mango</div>
+                <div class="card-body">
+                    <form method="post" asp-action="Add" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="Name" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <input type="text" name="Description" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price</label>
+                            <input type="number" name="Price" class="form-control" step="0.01" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Image Upload (optional)</label>
+                            <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">Add Mango</button>
+                    </form>
+                </div>
+            </div>
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success mt-3">@TempData["Message"]</div>
+            }
+        </div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-warning fw-bold">Mango List</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var product in Model)
+                            {
+                                <tr>
+                                    <td>@product.Id</td>
+                                    <td><img src="@product.ImageUrl" alt="@product.Name" style="height:50px;" /></td>
+                                    <td>@product.Name</td>
+                                    <td>@product.Description</td>
+                                    <td>৳@product.Price</td>
+                                    <td>
+                                        <a class="btn btn-sm btn-primary me-1" href="@Url.Action("Edit", "Dashboard", new { id = product.Id })">Edit</a>
+                                        <form method="post" asp-action="Delete" asp-route-id="@product.Id" style="display:inline;" onsubmit="return confirm('Delete this mango?');">
+                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

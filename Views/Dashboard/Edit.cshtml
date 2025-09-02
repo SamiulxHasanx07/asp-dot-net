@@ -1,0 +1,35 @@
+@model Models.Product
+@{
+    ViewData["Title"] = "Edit Mango";
+}
+<div class="container mt-5" style="max-width:500px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-warning fw-bold">Edit Mango</div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="Name" class="form-control" value="@Model.Name" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <input type="text" name="Description" class="form-control" value="@Model.Description" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Price</label>
+                    <input type="number" name="Price" class="form-control" step="0.01" value="@Model.Price" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Current Image</label><br />
+                    <img src="@Model.ImageUrl" alt="@Model.Name" style="height:80px;" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Change Image (optional)</label>
+                    <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+                </div>
+                <button type="submit" class="btn btn-warning w-100">Update Mango</button>
+                <a href="@Url.Action("Index", "Dashboard")" class="btn btn-secondary w-100 mt-2">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
