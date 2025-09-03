@@ -253,3 +253,4 @@ G:\asp-dot-net\bin\Debug\net9.0\runtimes\win-arm\native\e_sqlite3.dll
 G:\asp-dot-net\bin\Debug\net9.0\runtimes\win-arm64\native\e_sqlite3.dll
 G:\asp-dot-net\bin\Debug\net9.0\runtimes\win-x64\native\e_sqlite3.dll
 G:\asp-dot-net\bin\Debug\net9.0\runtimes\win-x86\native\e_sqlite3.dll
+G:\asp-dot-net\obj\Debug\net9.0\..sourcelink.json
